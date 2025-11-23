@@ -2,5 +2,7 @@
 Hackathon proj
 Contributors:
 Moldovan Luca
+
 Moldoveanu Virgiliu Stefan
+
 Manolescu Neacsu Andrei
