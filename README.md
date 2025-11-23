@@ -3,8 +3,8 @@ Hackathon proj
 
 Contributors:
 
-Moldovan Luca
+- Moldovan Luca
 
-Moldoveanu Virgiliu Stefan
+- Moldoveanu Virgiliu Stefan
 
-Manolescu Neacsu Andrei
+- Manolescu Neacsu Andrei
