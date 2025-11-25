@@ -4,11 +4,17 @@ import time
 import random
 from urllib.parse import urlparse
 
+#we use this script to search for pros and cons about the companies found previously
+#we mainly search search for user experiences and thats why we target forums
+#so inside this script we will focus on that - execute the search queries and retrieve the links from various forums
+
 
 db = "companies_url.db"
 source_table = "companies_url"
 target_table = "companies_discussions"
 
+
+#some key search queries that usually output forums 
 search_variations = [
     'Why is {company} bad?',
     'Opinions on {company}?',
@@ -35,6 +41,7 @@ def init_db():
     conn.commit()
     return conn
 
+#retrieving the companies
 def get_company_names():
      conn = init_db()
      cursor = conn.cursor()
@@ -51,6 +58,8 @@ def extract_domain(url):
     except:
         return "unknown"
 
+#for each company we will six search variations
+#but we also collect the first two websites after each search query
 def scrape_forums():
     company_names = get_company_names()
     conn = init_db()
