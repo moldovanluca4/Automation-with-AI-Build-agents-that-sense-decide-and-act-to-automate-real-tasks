@@ -82,7 +82,7 @@ def scrape_and_save_linkedin():
                             break
                 
                 if not found:
-                    print("No LinkedIn URL found")
+                    print("no linkedin url found")
 
                 time.sleep(random.uniform(1, 3))
 
