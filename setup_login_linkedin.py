@@ -21,9 +21,8 @@ def save_login_state():
             page.fill('#password', password)
             page.click('button[type="submit"]')
         except Exception as e:
-            print(f"Auto-fill failed (page might have changed): {e}")
-            print("Please type credentials manually in the browser window.")
-        input(">>> Press ENTER in this terminal AFTER you are fully logged in...")
+            print(f"filling credentials has failed: {e}")
+        input("press enter here after you are done with the login(to stopp the process)")
         #storing the cookies
         context.storage_state(path="linkedin_state.json")
         #this step is essential because evrytime we run a bot and load the specific file the browser remembers we logged in before and we can safely bypas captchas
