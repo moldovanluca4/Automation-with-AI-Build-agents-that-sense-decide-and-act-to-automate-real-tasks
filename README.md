@@ -62,6 +62,22 @@ structured_forums_collector.py: Searches specific queries (search_terms = "Why i
 constructing_main_table.py: Merges the gathered URL data and the scraped Linkedin details into one master table (main_table). We did this in order to simplify the workflow inside n8n.
 
 
+## Data Migration & API Usage
+
+To enable integration with n8n workflows, this project includes a set of custom migration scripts designed to transfer data from the local SQLite database to Google Sheets.
+These scripts are not included in this repository for security reasons, as they require personal Google Cloud API credentials (credentials.json and token.json) to authenticate.
+
+Excluded Scripts:
+
+- from_db_to_googlesheet.py
+
+- from_db_to_googlesheet_linkedin.py
+
+- from_db_to_googlesheet_forums.py
+
+- from_db_to_googlesheet_main_table.py
+
+
 ## Utilities and Maintenance
 
 ### Database Viewers
