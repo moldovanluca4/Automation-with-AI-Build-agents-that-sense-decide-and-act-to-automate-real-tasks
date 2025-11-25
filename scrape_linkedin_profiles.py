@@ -1,14 +1,20 @@
+#IMPORTS
+#playwright - browser automation tool
+#sqlite3 - manage embedded db
+
 import sqlite3
 import time
 import random
 import os
 from playwright.sync_api import sync_playwright
 
+#the main goal of this script is to look inside each company linked page - theres some valuable data that we can obtain 100% from the linkedin profiles
+#from linkedin profiles we always can get info about the headquarters, company size, maybe founding year, maybe products and also the industry
 
 db = "companies_url.db"
 input_table = "companies_url"       
 output_table = "companies_details"   
-cookie_file = "linkedin_state.json"   
+cookie_file = "linkedin_state.json"              #we have json file that contains the saved login cookies - allows user to login easily                         
 
 def init_db():
     conn = sqlite3.connect(db)
@@ -43,9 +49,11 @@ def get_companies():
     except: return []
     finally: conn.close()
 
-def human_delay():
+def human_behaviour():
     time.sleep(random.uniform(3.0, 6.0))
 
+#linkedin is throwing popups - the one i had problems while writing this code was the one saying "do you allow people to see that you visited theyre profiles"(or something like that)
+#and the options for that were allow and dont allow - and the beginning we collected really few data due to that popup cause for one in three pages the popup appears and the code used to skip pages bcs of that
 def handle_popups(page):
     try:
         dont_allow_btn = page.locator("button").filter(has_text="Don't allow").first
@@ -58,6 +66,8 @@ def handle_popups(page):
         if msg_close.is_visible(): msg_close.click()
     except: pass
 
+#extracts specific data based on the defined labels
+#it levarages the definition lists from html
 def get_grid_value(page, label_text):
     try:
         locator = page.locator(f"//dt[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{label_text.lower()}')]/following-sibling::dd[1]")
@@ -66,6 +76,8 @@ def get_grid_value(page, label_text):
     except: pass
     return None
 
+#when we enter a company page on linkedin this function reads the html
+#we look at the currently open linkedin page and fill the dictionary with the piece of data needed(in case we find it)
 def extract_details(page, company_name, url):
     data = {
         "company_name": company_name,
@@ -79,7 +91,6 @@ def extract_details(page, company_name, url):
         "website": "none",
         "description": "none"
     }
-
   
     try:
         data["description"] = page.locator("section.artdeco-card p.break-words").first.inner_text().strip()
@@ -93,7 +104,7 @@ def extract_details(page, company_name, url):
             text = item.strip()
             lower_text = text.lower()
             
-            if data["industry"] == "N/A" and "employee" not in lower_text and "follower" not in lower_text:
+            if data["industry"] == "none" and "employee" not in lower_text and "follower" not in lower_text:
                 if "," not in text:
                     data["industry"] = text
             
@@ -102,7 +113,7 @@ def extract_details(page, company_name, url):
                 data["company_size"] = text
             
             if "follower" not in lower_text and "employee" not in lower_text:
-                if "," in text or (data["industry"] != "N/A" and text != data["industry"]):
+                if "," in text or (data["industry"] != "none" and text != data["industry"]):
                     data["headquarters"] = text
 
     except Exception as e:
@@ -160,6 +171,7 @@ def save_to_db(data):
     finally:
         conn.close()
 
+#start the browser, search each company, enter linkedin profile, search for the wanted info
 def main_scraper():
     if not os.path.exists(cookie_file):
         print(f"error = {cookie_file} - run setup_login_linkedin")
@@ -174,7 +186,7 @@ def main_scraper():
         for company in company_names:
             try:
                 page.goto("https://duckduckgo.com")
-                page.locator('input[name="q"]').fill(f"{company} linkedin company")
+                page.locator('input[name="q"]').fill(f"{company} linkedin")
                 page.keyboard.press("Enter")
                 
                 try:
@@ -197,13 +209,11 @@ def main_scraper():
                 
                 if valid_url.endswith("/"): valid_url = valid_url[:-1]
                 about_url = f"{valid_url}/about/"
-
-                print(f"   -> Visiting: {about_url}")
                 page.goto(about_url, timeout=60000)
                 
                 time.sleep(2)
                 handle_popups(page)
-                human_delay()
+                human_behaviour()
 
                 if "login" in page.url or "authwall" in page.url:
                     print("auth wall")

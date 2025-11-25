@@ -50,7 +50,6 @@ def scrape_and_save_linkedin():
 #loop trough the company array containing company names
         for company in company_names:
             try:
-                print(f"Processing: {company}")
                 search_term = f"{company} linkedin"
                 
                 page.goto("https://duckduckgo.com")
