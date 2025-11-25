@@ -38,8 +38,6 @@ def clean_database():
     try:
         df = pd.read_sql_query(f"SELECT * FROM {table}", conn)            #for smaller datasets this approach of fetching the entire db at once in the computers RAM instead of fetching row by row is suitable bcs it makes the process faster and overall more efficient
         original_count = len(df)
-        print(f"Loaded {original_count} entries")
-
         
         df = df[df['company_url'].str.startswith(('http://', 'https://'), na=False)]       #filter 1 - removes broken or non web links it deletes email links for ex or telephone links or other anchors
         
@@ -77,10 +75,10 @@ def clean_database():
         final_df['status'] = 'new'
         final_df.to_sql(table, conn, if_exists='replace', index=False) #a brute force like approach since we drop the existing unfiltered table and create a new filtered table
         
-        print(f"Initial entries{original_count}")
-        print(f"We cleaned {len(final_df)} entries")
+       
+        print(f"filtered {len(final_df)} entries")
         print(f"we had removed {original_count - len(final_df)} garbage tuples")
-        print("Quick look into the clean data:")
+        print("final thing")
         print(final_df[['company_name', 'company_url']].head(10))
 
     except Exception as e:
