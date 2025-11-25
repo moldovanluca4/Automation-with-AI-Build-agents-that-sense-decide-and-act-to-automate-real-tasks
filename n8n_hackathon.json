@@ -1,0 +1,612 @@
+{
+  "name": "3CHILL",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "11R1YD3SIAEzX5S9foKhBkC3d1jK63sbcJfq_Nvjv1kY",
+          "mode": "list",
+          "cachedResultName": "Companies URL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11R1YD3SIAEzX5S9foKhBkC3d1jK63sbcJfq_Nvjv1kY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1077460020,
+          "mode": "list",
+          "cachedResultName": "Sheet4",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11R1YD3SIAEzX5S9foKhBkC3d1jK63sbcJfq_Nvjv1kY/edit#gid=1077460020"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -64
+      ],
+      "id": "93687147-db8d-42de-9b9f-9add00f87449",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "E1BFt41v1jkptN2q",
+          "name": "Google Sheets Trigger account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.website }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -208,
+        -256
+      ],
+      "id": "ac18b4e2-f15a-4cfe-aadc-427d2e2c48f4",
+      "name": "HTTP Request",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ac3a5cd4-381c-4d73-9d5f-373b533a5c7f",
+              "leftValue": "={{ $('Google Sheets Trigger').item.json.status }}",
+              "rightValue": "new",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -416,
+        -64
+      ],
+      "id": "c96d8a0f-f07d-4332-80ac-c15f126c2a63",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.data }}",
+        "destinationKey": "=data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        208,
+        -80
+      ],
+      "id": "a7ebea5f-6e68-410e-95b9-b4a26201980a",
+      "name": "Markdown",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following combined data to fill out the Wiki Page.\n\n# ===============\nSOURCE 1: OFFICIAL WEBSITE TEXT AND LINKEDIN PAGE TEXT\n{{ $('Markdown').item.json.data }}\n\n\n# ===============\nSOURCE 2: USER FORUM REVIEWS\n{{ $json.data }}\n\n### YOUR MISSION\n\n1. **From Source 1 (Official):**\n    - Identify the \"Main Products/USP\".\n    - Determine the \"Target Audience\".\n    - Find the \"Pricing Indication\" (Free vs Paid vs Enterprise).\n      - Find the founding date of the company ( If you find multiple years (e.g., \"Founded 2010, relaunched 2012\"), ALWAYS select the EARLIEST year.\nFormat: Return ONLY the 4-digit year (e.g., \"2010\"). Do not add text like \"est.\" or \"approx\".)\n2. **From Source 2 (Reviews):**\n    - Identify the top 3 \"Dealbreakers\".\n    - Find the #1 \"Missing Feature\".\n    - Assess the \"Support Sentiment\".\n\nReturn the result as strict JSON.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "### ROLE\n\nYou are a Comprehensive Market Intelligence Analyst. Your job is to build a complete profile of an EdTech competitor by synthesizing two data sources.\n\n### DATA SOURCES\n\n1. **OFFICIAL WEBSITE:** Use this to find what they SELL (Products, USP, Pricing).\n2. **USER REVIEWS:** Use this to find where they FAIL (Bugs, Missing Features, Bad Support).\n\n### EXTRACTION RULES\n\n- **USP & Products:** Extract the clear value proposition from the official text. What makes them special?\n- **Pricing:** Look for numbers ($) or models (Freemium/Quote). Check *both* sources—official pricing vs. user complaints about hidden costs.\n- **Target Audience:** Infer this from the features. (e.g., \"Dean's Dashboard\" = Higher Ed; \"Gamified Math\" = K-12).\n- **Dealbreakers:** Ignore generic anger. Find specific reasons users switch away.\n  ** Founding Date**Run a deep search in order to find the founding year of the company.If you find multiple years (e.g., \"Founded 2010, relaunched 2012\"), ALWAYS select the EARLIEST year.\nFormat: Return ONLY the 4-digit year (e.g., \"2010\"). Do not add text like \"est.\" or \"approx\".)",
+          "enableStreaming": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1248,
+        -112
+      ],
+      "id": "d2617b55-0057-40a9-b166-99c5dfe9253e",
+      "name": "AI Agent",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        112
+      ],
+      "id": "7916a6f9-b7c2-46f3-b15f-8c967675e3ea",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "xAxUZwVahg5SvnbI",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "https://www.notion.so/2b5736480c6b80ea8ee2d8eaef397ee4?v=2b5736480c6b80fa87e9000ca62acf22&source=copy_link",
+          "mode": "url"
+        },
+        "title": "Hackathon Wiki",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "company_size|rich_text",
+              "textContent": "={{ $('Google Sheets Trigger').item.json.size }}"
+            },
+            {
+              "key": "Company_Name|title",
+              "title": "={{ $('Google Sheets Trigger').item.json.company_name }}"
+            },
+            {
+              "key": "Target Audience|rich_text",
+              "textContent": "={{ $json['Target Audience'] }}"
+            },
+            {
+              "key": "Main Products/USP|rich_text",
+              "textContent": "={{ $json['Main Products/USP'] }}"
+            },
+            {
+              "key": "Deal Breakers|rich_text",
+              "textContent": "={{ $json.Dealbreakers }}"
+            },
+            {
+              "key": "Missing Features|rich_text",
+              "textContent": "={{ $json['Missing features'] }}"
+            },
+            {
+              "key": "URL|url",
+              "urlValue": "={{ $('Google Sheets Trigger').item.json.website }}"
+            },
+            {
+              "key": "HQ|rich_text",
+              "textContent": "={{ $('Google Sheets Trigger').item.json.hq }}"
+            },
+            {
+              "key": "Founding Year|rich_text",
+              "textContent": "={{ $json['Founding year'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1888,
+        -96
+      ],
+      "id": "e516246f-f197-4898-be75-7a7df094f5ed",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "qzXKkPwVP8lb8ymx",
+          "name": "Notion account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.data }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        -288
+      ],
+      "id": "a019229f-2814-4058-ba7a-2fcf372c8baa",
+      "name": "Markdown1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "11R1YD3SIAEzX5S9foKhBkC3d1jK63sbcJfq_Nvjv1kY",
+          "mode": "list",
+          "cachedResultName": "Companies URL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11R1YD3SIAEzX5S9foKhBkC3d1jK63sbcJfq_Nvjv1kY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 397898978,
+          "mode": "list",
+          "cachedResultName": "Sheet3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11R1YD3SIAEzX5S9foKhBkC3d1jK63sbcJfq_Nvjv1kY/edit#gid=397898978"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "company_name",
+              "lookupValue": "={{ $('Google Sheets Trigger').item.json.company_name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        384,
+        -304
+      ],
+      "id": "d0b79947-87c8-43f8-8cff-4c03ca6b9f5e",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gRdnC5dfLVWFFFWu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.discussion_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        832,
+        -288
+      ],
+      "id": "4888a5a8-011e-443a-9b06-a33af1473c26",
+      "name": "HTTP Forums",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.linkedin_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -192,
+        96
+      ],
+      "id": "dbc651f5-5a7a-4839-9aef-ed88fbe8a364",
+      "name": "HTTP Request1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        32,
+        -80
+      ],
+      "id": "24a19bf5-0bfa-46f9-9588-38dcffde7b8b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1c0b4f7-4cae-4e93-8cb4-db9f6141646c",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "new",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        -288
+      ],
+      "id": "25fb6e99-082d-471d-8271-c3ac89ec48d4",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"main_products_usp\": {\n      \"type\": \"string\",\n      \"description\": \"Short summary of their main product and what they claim is unique (USP).\"\n    },\n    \"target_audience\": {\n      \"type\": \"string\",\n      \"description\": \"Who they sell to (K-12, Higher Ed, Corporate, etc.).\"\n    },\n    \"pricing_indication\": {\n      \"type\": \"string\",\n      \"description\": \"Any public pricing info (e.g. '$5/user', 'Freemium', 'Contact Sales').\"\n    },\n    \"dealbreakers\": {\n      \"type\": \"array\",\n      \"items\": { \"type\": \"string\" },\n      \"description\": \"List of top 3 specific reasons users cancel or hate the product.\"\n    },\n    \"missing_features\": {\n      \"type\": \"string\",\n      \"description\": \"The specific feature request that appears most often in reviews.\"\n    },\n    \"support_sentiment\": {\n      \"type\": \"string\",\n      \"description\": \"One phrase describing the quality of customer support (e.g. 'Non-existent').\"\n    },\n    \"summary_of_negativity\": {\n      \"type\": \"string\",\n      \"description\": \"A 2-sentence summary of why a user would REFUSE to buy this.\"\n    },\n    \"founding_year\": {\n      \"type\": \"string\",\n      \"description\": \"The SINGLE earliest founding year. Must be exactly 4 digits (e.g. '2012'). Return null if unknown.\"\n    }\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1456,
+        128
+      ],
+      "id": "13c20b8b-7ecc-4afc-906d-ec2bc55750b6",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "25b0e1ac-9d6c-486c-97e7-d65a3cbc92a0",
+              "name": "Main Products/USP",
+              "value": "={{ $json.output.main_products_usp }}",
+              "type": "string"
+            },
+            {
+              "id": "6544ab1b-8e48-43a2-aa73-c1d541c06dc8",
+              "name": "Target Audience",
+              "value": "={{ $json.output.target_audience }}",
+              "type": "string"
+            },
+            {
+              "id": "430bfbd9-feb0-4b6e-8987-fe4d4930e172",
+              "name": "Pricing indication",
+              "value": "={{ $json.output.pricing_indication }}",
+              "type": "string"
+            },
+            {
+              "id": "fd1eb9b7-f039-4f0c-b02a-42a7e1d47174",
+              "name": "Dealbreakers",
+              "value": "={{ $json.output.dealbreakers[0] }}\n{{ $json.output.dealbreakers[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "28cce072-6508-45fe-8c9f-fa03c1758474",
+              "name": "Missing features",
+              "value": "={{ $json.output.missing_features }}",
+              "type": "string"
+            },
+            {
+              "id": "ebbf0c3a-4e2a-45b3-8a40-b014a96bac1c",
+              "name": "Support sentiment",
+              "value": "={{ $json.output.support_sentiment }}",
+              "type": "string"
+            },
+            {
+              "id": "b09f56fd-5ef9-4af9-a60e-3907c77b6ec6",
+              "name": "Summary of negativity",
+              "value": "={{ $json.output.summary_of_negativity }}",
+              "type": "string"
+            },
+            {
+              "id": "99664c2e-90bf-4803-8e2b-a3278f5bb30d",
+              "name": "Missing features",
+              "value": "={{ $json.output.missing_features }}",
+              "type": "string"
+            },
+            {
+              "id": "1eed584e-b1af-4583-8825-b7e875635648",
+              "name": "Founding year",
+              "value": "={{ $json.output.founding_year }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1616,
+        -80
+      ],
+      "id": "6bd3e15d-912f-4ecc-a532-0f1b1df194e1",
+      "name": "Edit Fields",
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Forums": {
+      "main": [
+        [
+          {
+            "node": "Markdown1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Forums",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1cd63704-547f-4e5d-9318-a1656236f684",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1a6c3040054bc69a9d94f8006631cdd21703b54a16651147aebb1e20d1aa0ef2"
+  },
+  "id": "xJh0KVvGQ8c08E7d",
+  "tags": []
+}
