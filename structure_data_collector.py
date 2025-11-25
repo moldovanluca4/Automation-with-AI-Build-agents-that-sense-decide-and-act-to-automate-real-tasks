@@ -51,7 +51,7 @@ def scrape_and_save():
             page.goto("https://duckduckgo.com")                                      #we us duckduckgo in order to avoid captchas
             
             search_term = "top LMS EdTech competitors list"                          #one of the search terms - but we can also use a data structure where we store more related search terms
-            print(f"Searching for: {search_term}")
+            print(f"searching for {search_term}")
             
             page.locator('input[name="q"]').fill(search_term)                         #we locate the search bar type the search term and press enter to perform the search query
             page.keyboard.press("Enter")
@@ -61,10 +61,10 @@ def scrape_and_save():
             try:
                 page.wait_for_selector("li[data-layout='organic']", timeout=10000)                #to avoid being detected we pause the script until the results are fully loaded
             except:
-                print("Warning: Timed out waiting for results selector.")
+                print("timeout")
 
             results = page.locator("li[data-layout='organic']").all()                           #after everything was fully loaded we push the results in a list
-            print(f"Found {len(results)} search results.")
+            print(f"found {len(results)} results")
 
 
             count = 0
@@ -82,7 +82,7 @@ def scrape_and_save():
                         try:
                             cursor.execute(f"INSERT INTO {table} (name, url) VALUES (?, ?)", (name, url))
                             count += 1
-                            print(f"Added to db: {name}")
+                            print(f"has been {name} added")
                         except sqlite3.IntegrityError:
                             print(f"skipped(duplicate): {name}")
 
