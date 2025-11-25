@@ -1,3 +1,7 @@
+#IMPORTS
+#sqlite3 - handle the sqlite db
+#pandas - data manipulation tool used to remove the tuples containing None(not the best approach -> results in data loss)
+
 import pandas as pd
 import sqlite3
 
@@ -28,16 +32,16 @@ data = [
     ('ODR Portal', 'https://smartodr.in', 'https://www.linkedin.com/company/cadreodr', '11-50 employees', 'Bengaluru, Karnataka', 'ODR Portal')
 ]
 
+#creating the structure of the table
 columns = ['company_name', 'website', 'linkedin_url', 'size', 'hq', 'original_search']
 df = pd.DataFrame(data, columns=columns)
-
-df_clean = df.dropna()
+df_clean = df.dropna()                               #dropping the tuples containing None
 
 db_name = "companies_url.db"
 table_name = "clean_main_table"
 
 conn = sqlite3.connect(db_name)
 
-df_clean.to_sql(table_name, conn, if_exists='replace', index=False)
+df_clean.to_sql(table_name, conn, if_exists='replace', index=False)           #we now put the clean data inside the db, we use if_exists because it overwrites an already existing table from the previous failed attempts to clean data but this time it writes the new data
 
 conn.close()
