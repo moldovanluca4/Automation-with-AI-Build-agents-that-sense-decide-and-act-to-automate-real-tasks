@@ -10,7 +10,7 @@ table_name = "companies_discussions"
 #keep the popular forums
 good_domains= [
     "reddit.com", "quora.com", "ycombinator.com", "stackexchange.com", "stackoverflow.com", 
-    "steamcommunity.com","g2.com", "capterra.com", "trustpilot.com", "trustradius.com", 
+    "g2.com", "capterra.com", "trustpilot.com", "trustradius.com", 
     "glassdoor.com", "bbb.org", "complaintsboard.com", "consumeraffairs.com", "pissedconsumer.com", 
     "ripoffreport.com", "peerspot.com", "vossity.com", "justuseapp.com", "softwareadvice.com",
     "getapp.com", "slashdot.org"
