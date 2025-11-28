@@ -1,5 +1,7 @@
 # Automation-with-AI-Build-agents-that-sense-decide-and-act-to-automate-real-tasks
 
+##Award Winning Proj
+
 ## Hackathon proj - Market Research Automation Agent
 
 A modular Python-based automation suite designed to "sense, decide, and act" to perform comprehensive market research. This project automates the discovery of competitor companies (specifically in the EdTech/LMS space), scrapes their details from LinkedIn, and gathers public sentiment from forum discussions.
