@@ -1,3 +1,5 @@
+from settings import DATABASE_PATH, LINKEDIN_STATE_PATH
+from url_security import is_linkedin_url
 #IMPORTS
 #playwright - browser automation tool
 #sqlite3 - manage embedded db
@@ -11,10 +13,10 @@ from playwright.sync_api import sync_playwright
 #the main goal of this script is to look inside each company linked page - theres some valuable data that we can obtain 100% from the linkedin profiles
 #from linkedin profiles we always can get info about the headquarters, company size, maybe founding year, maybe products and also the industry
 
-db = "companies_url.db"
+db = DATABASE_PATH
 input_table = "companies_url"       
 output_table = "companies_details"   
-cookie_file = "linkedin_state.json"              #we have json file that contains the saved login cookies - allows user to login easily                         
+cookie_file = LINKEDIN_STATE_PATH              #we have json file that contains the saved login cookies - allows user to login easily                         
 
 def init_db():
     conn = sqlite3.connect(db)
@@ -199,7 +201,7 @@ def main_scraper():
                 valid_url = None
                 for res in results:
                     url = res.get_attribute("href")
-                    if url and ("linkedin.com/company/" in url or "linkedin.com/school/" in url):
+                    if url and is_linkedin_url(url, company_only=True):
                         valid_url = url
                         break
                 

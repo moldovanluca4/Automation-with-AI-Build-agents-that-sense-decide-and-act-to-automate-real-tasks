@@ -1,3 +1,4 @@
+from settings import DATABASE_PATH
 #IMPORTS
 #sqlite3 - handle the sqlite db
 #pandas - data manipulation tool used to remove the tuples containing None(not the best approach -> results in data loss)
@@ -37,7 +38,7 @@ columns = ['company_name', 'website', 'linkedin_url', 'size', 'hq', 'original_se
 df = pd.DataFrame(data, columns=columns)
 df_clean = df.dropna()                               #dropping the tuples containing None
 
-db_name = "companies_url.db"
+db_name = DATABASE_PATH
 table_name = "clean_main_table"
 
 conn = sqlite3.connect(db_name)

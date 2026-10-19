@@ -1,6 +1,11 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "app"))
+from settings import DATABASE_PATH
 import sqlite3
 
-db = "companies_url.db"
+db = DATABASE_PATH
 
 def clean_slate():
     conn = sqlite3.connect(db)

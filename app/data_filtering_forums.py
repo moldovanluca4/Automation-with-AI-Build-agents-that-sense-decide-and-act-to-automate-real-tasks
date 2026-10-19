@@ -1,9 +1,11 @@
+from settings import DATABASE_PATH
+from url_security import hostname_matches
 import sqlite3
 import re
 import os
 
 
-db = "companies_url.db"
+db = DATABASE_PATH
 
 table_name = "companies_discussions" 
 
@@ -32,7 +34,7 @@ def should_keep_url(url):
         return False
    
     for domain in good_domains:
-        if domain in url_lower:
+        if hostname_matches(url, [domain]):
             return True
   
     for pattern in good_url_patterns:

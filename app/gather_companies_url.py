@@ -1,3 +1,4 @@
+from settings import DATABASE_PATH
 #IMPORTS 
 #sqlite3 built in dbms allows the script to read the list of websites and visit them
 #tldextract is a life saver tools bcs can easily spot the diff between the suffix and the domain of a website(if we have something like proarena.co.ro spots the domain proarena and the suffix .co.ro)
@@ -13,7 +14,7 @@ from playwright.sync_api import sync_playwright
 
 #DB config
 
-db = "companies_url.db"
+db = DATABASE_PATH
 input_table = "google_search_result"
 output_table = "companies_url"
 

@@ -1,3 +1,5 @@
+from settings import DATABASE_PATH
+from url_security import is_linkedin_url
 #IMPORTS
 #sqlite3 - interacting with the local db
 #time and random - make random pauses to mimic human like movement 
@@ -7,7 +9,7 @@ import sqlite3
 import time
 import random
 
-db = "companies_url.db"
+db = DATABASE_PATH
 table = "companies_linkedin"
 
 def init_db():
@@ -69,7 +71,7 @@ def scrape_and_save_linkedin():
                     url = link.get_attribute("href")
                     name = link.inner_text()
 
-                    if url and "linkedin.com" in url:
+                    if url and is_linkedin_url(url):
                         try:
                             cursor.execute(f"INSERT INTO {table} (name, linkedin_url) VALUES (?,?)", (name, url))
                             conn.commit()

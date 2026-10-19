@@ -4,6 +4,7 @@
 
 import getpass
 from playwright.sync_api import sync_playwright
+from settings import LINKEDIN_STATE_PATH, save_private_json
 
 def save_login_state():
     #user input
@@ -24,7 +25,7 @@ def save_login_state():
             print(f"filling credentials has failed: {e}")
         input("press enter here after you are done with the login(to stopp the process)")
         #storing the cookies
-        context.storage_state(path="linkedin_state.json")
+        save_private_json(LINKEDIN_STATE_PATH, context.storage_state())
         #this step is essential because evrytime we run a bot and load the specific file the browser remembers we logged in before and we can safely bypas captchas
         
         browser.close()

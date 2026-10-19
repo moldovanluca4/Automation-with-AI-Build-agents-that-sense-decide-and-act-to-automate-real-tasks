@@ -1,3 +1,4 @@
+from settings import DATABASE_PATH
 from playwright.sync_api import sync_playwright
 import sqlite3
 import time
@@ -9,7 +10,7 @@ from urllib.parse import urlparse
 #so inside this script we will focus on that - execute the search queries and retrieve the links from various forums
 
 
-db = "companies_url.db"
+db = DATABASE_PATH
 source_table = "companies_url"
 target_table = "companies_discussions"
 
@@ -110,8 +111,8 @@ def scrape_forums():
                 except Exception as e:
                     print(f"error on searching {search_term}: {e}")
 
+        browser.close()
     conn.close()
-    browser.close()
 
 if __name__ == "__main__":
     scrape_forums()

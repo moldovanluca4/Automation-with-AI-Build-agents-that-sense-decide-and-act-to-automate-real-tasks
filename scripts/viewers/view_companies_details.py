@@ -1,9 +1,14 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "app"))
+from settings import DATABASE_PATH
 import sqlite3
 
 def view_db():
-    conn = sqlite3.connect('companies_url.db')
+    conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()
-    sql_query = "SELECT * FROM companies_url"
+    sql_query = "SELECT * FROM companies_details"
     
     try:
         cursor.execute(sql_query)

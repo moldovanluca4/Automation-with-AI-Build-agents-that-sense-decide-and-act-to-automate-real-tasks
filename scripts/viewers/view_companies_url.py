@@ -1,13 +1,19 @@
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "app"))
+from settings import DATABASE_PATH
 import sqlite3
 
 def view_db():
-    conn = sqlite3.connect('companies_url.db')
+    conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()
-    sql_query = "SELECT * FROM google_search_result"
+    sql_query = "SELECT * FROM companies_url"
     
     try:
         cursor.execute(sql_query)
         rows = cursor.fetchall()
+        print(f"Found {len(rows)} entries")
         for row in rows:
             print(row)
             

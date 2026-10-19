@@ -10,3 +10,16 @@ from_db_to_googlesheet_forums.py
 from_db_to_googlesheet_linkedin.py
 from_db_to_googlesheet_main_table.py
 from_db_to_googlesheet.py
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.venv/
+**/credentials/
+*.pem
+*.key
+config.local.toml
+/SECURITY.md
+/docs/security/
+/docs/implementation/
+/docs/restructure-manifest.json

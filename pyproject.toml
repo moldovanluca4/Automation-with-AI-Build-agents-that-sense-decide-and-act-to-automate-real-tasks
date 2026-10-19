@@ -1,0 +1,12 @@
+[tool.market-research.paths]
+database = "companies_url.db"
+linkedin_state = "linkedin_state.json"
+
+[tool.market-research.google]
+sheet_name = "Companies URL"
+sheet_id = ""
+
+[tool.market-research.scheduler]
+day = "monday"
+time = "09:00"
+poll_interval_seconds = 60

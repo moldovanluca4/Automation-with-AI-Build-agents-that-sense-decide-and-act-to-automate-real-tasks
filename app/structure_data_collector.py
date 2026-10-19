@@ -1,3 +1,4 @@
+from settings import DATABASE_PATH
 #IMPORTS
 #we went with synchronous version of playwright which allows the code to run step by step
 #sqlite just for simplicity and easier to work locally
@@ -8,7 +9,7 @@ import sqlite3
 #DB CONFIG
 #we define the database and table in which we store the results gathered after running thi script
 
-db = "companies_url.db" 
+db = DATABASE_PATH 
 table = "google_search_result"
 
 

@@ -1,3 +1,4 @@
+from settings import DATABASE_PATH
 #IMPORTS 
 #sqlite3 dbms
 #pandas is a data analysis library alows us to filter the data
@@ -11,7 +12,7 @@ import tldextract
 
 #CONFIG
 
-db = "companies_url.db"
+db = DATABASE_PATH
 table = "companies_url"
 
 #if the script collected accidentally any of these buttons we rule them out, since its useless data for us
